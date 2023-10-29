@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    // Pull the required Docker images
+                    docker.image('bismillahtraders/ca5db').pull()
+                    docker.image('bismillahtraders/ca5fe').pull()
+
+                    // Run Docker Compose to start the services
+                    sh 'docker-compose up -d'
+
+                    // You can add additional steps here for testing or other tasks
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Clean up by stopping and removing the Docker Compose services
+            sh 'docker-compose down'
+        }
+    }
+}
