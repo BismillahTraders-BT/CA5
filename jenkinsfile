@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Set up environment variables
+                    def imageName = 'your-dockerhub-username/mysql-mlops'
+                    def dockerfile = 'Dockerfile'
+                    
+                    // Build the Docker image
+                    docker.build(imageName, "-f ${dockerfile} .")
+                }
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    def imageName = 'your-dockerhub-username/mysql-mlops'
+                    
+                    // Authenticate with Docker Hub (if not already authenticated)
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        // Push the Docker image to Docker Hub
+                        docker.image(imageName).push()
+                    }
+                }
+            }
+        }
+    }
+}
